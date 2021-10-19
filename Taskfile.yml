@@ -1,0 +1,87 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  VERSION: "0.2.0"
+  URL: https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.0/optic_capture-v0.2.0-x86_64-apple-darwin.tar.gz
+  SHASUM: $(curl -s  {{.URL}} | shasum -a 256 | awk '{print $1}')
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  create-formula-dir:
+    cmds:
+      - mkdir Formula
+    status:
+      - test -d Formula
+    silent: true
+  clean:
+    cmds:
+      - rm -f Formula/capture.rb
+    silent: true
+
+  get-stats:
+    desc: "[DIAG] show the current version of Optic CLI"
+    cmds:
+      - 'echo "Version      : {{.VERSION}}"'
+      - 'echo "SHA256       : {{.SHASUM}}"'
+      - 'echo "URL          : {{.URL}}"'
+    silent: true
+
+  generate-formula:
+    desc: "[SRV] Generates a new capture formula based on the latest NPM package"
+    deps: [ create-formula-dir ]
+    sources: 
+      - capture-template.rb
+    generates:
+      - Formula/capture.rb
+    cmds:
+      - sed 's|{URL}|{{.URL}}|g' capture-template.rb > Formula/capture.rb
+      - sed -i '' 's|{SHASUM}|{{.SHASUM}}|g' Formula/capture.rb
+    silent: true
+
+  brew-audit:
+    desc: "[SRV] Audits formula for best practices"
+    deps: [ generate-formula ]
+    cmds: 
+      - brew audit --online --formula ./Formula/capture.rb
+    silent: true
+
+  brew-commit:
+    desc: "[SRV] commits a change to the local repository (required for brew test, which clones the repo)"
+    cmds:
+      - git add Formula/capture.rb
+      - git -c user.email=action@github.com -c user.name='GitHub Package Updater' commit -m 'Updated Formula'
+    status:
+      - "! [ -n \"$(git status --porcelain)\" ]"
+    silent: true
+
+  brew-test:
+    # This needs to check for an existing tap definition and remove it (or force the new tap).
+    # In CI this doesn't matter much, but locally an existing test tap will break local testing.
+    # uninstall/untap only if a tap exists would be a sensible dependency
+    desc: "[SRV] Runs `brew test` for the local package"
+    deps: 
+      - generate-formula
+      - brew-commit
+    cmds: 
+      - brew uninstall optictest/capturetest/capture || exit 0
+      - brew untap optictest/capturetest || exit 0
+      - brew tap optictest/capturetest .
+      - brew install optictest/capturetest/capture
+      - brew test --verbose optictest/capturetest/capture
+      - brew uninstall optictest/capturetest/capture
+      - brew untap optictest/capturetest
+    silent: true
+
+  build:
+    desc: Builds a new brew formula from scratch and runs audit, test to validate it
+    cmds:
+      - task: clean
+      - task: generate-formula
+      - task: brew-test
+    silent: true
