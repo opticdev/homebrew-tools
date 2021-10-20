@@ -10,6 +10,6 @@ class Capture < Formula
   end
 
   test do
-    assert_match "Optic Capture", shell_output("#{bin}/optic_capture --version | awk '{print $1\" \"$2}'")
+    assert_match "Optic Capture {VERSION}", shell_output("#{bin}/optic_capture --version")
   end
 end
