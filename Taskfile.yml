@@ -62,13 +62,14 @@ tasks:
     silent: true
 
   brew-test:
-    # This needs to check for an existing tap definition and remove it (or force the new tap).
-    # In CI this doesn't matter much, but locally an existing test tap will break local testing.
-    # uninstall/untap only if a tap exists would be a sensible dependency
-    desc: "[SRV] Runs `brew test` for the local package"
-    deps: 
-      - generate-formula
-      - brew-commit
+    desc: "[SRV] Installs local package and runs `brew test`"
+    cmds: 
+      - task: generate-formula
+      - task: brew-commit
+      - task: brew-test-install
+    
+  brew-test-install:
+    desc: "[SRV] Installs Formula and runs test"
     cmds: 
       - brew uninstall optictest/capturetest/capture || exit 0
       - brew untap optictest/capturetest || exit 0
