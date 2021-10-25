@@ -1,18 +1,18 @@
 # The platform/arch combinations that we support.
 $targets = {
  :macos_x86 => {
-   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.2/optic_capture-v0.2.2-x86_64-apple-darwin.tar.gz",
-   :sha => "3507b12e981bea5d5f5ccf948f01b381b9a8092db0cd790492bd869e2d65b1af",
+   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.3/optic_capture-v0.2.3-x86_64-apple-darwin.tar.gz",
+   :sha => "be7b78d3c9bb130e50ced0aa482cc8707dcb474e6fe0916aff6b08930c6044a3",
    :binary => "optic_capture-x86_64-apple-darwin" },
 
  :macos_arm => {
-   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.2/optic_capture-v0.2.2-aarch64-apple-darwin.tar.gz",
-   :sha => "a631210de95299e1bebcc9acab470be965e6e797862c6fd1498124e4241b114a",
+   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.3/optic_capture-v0.2.3-aarch64-apple-darwin.tar.gz",
+   :sha => "93da67f8fcf2c9059e6cab37df8c1c903c5bd2e316814b1d5d28a4977c9c5354",
    :binary => "optic_capture-aarch64-apple-darwin" },
 
  :linux_x86 => {
-   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.2/optic_capture-v0.2.2-x86_64-unknown-linux-musl.tar.gz",
-   :sha => "47293af3c45e73426d239dee240c91b84b328f783d3da00af54d029222f1fd45",
+   :url => "https://s3.amazonaws.com/optic-packages/dists/optic_capture/v0.2.3/optic_capture-v0.2.3-x86_64-unknown-linux-musl.tar.gz",
+   :sha => "2e03aa43bc98e2162900356bec72a28256bfd48e2b41fc8f3f333460e011582c",
    :binary => "optic_capture-x86_64-unknown-linux-musl" },
 }
 
@@ -43,6 +43,6 @@ class Capture < Formula
   end
 
   test do
-    assert_match "Optic Capture 0.2.2", shell_output("#{bin}/optic_capture --version")
+    assert_match "Optic Capture 0.2.3", shell_output("#{bin}/optic_capture --version")
   end
 end
